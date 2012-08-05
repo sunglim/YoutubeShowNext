@@ -43,23 +43,49 @@ var addIcon = function(){
 	}
 };
 
-var getNextVideoUrl = function(){
-	var aryVideoList = document.getElementsByClassName("video-list-item");
-	var videoLink = aryVideoList[3].children[0].href;
-	//window.location = videoLink;
-	window.location = videoLink;
-}
+var addAdditionalBtn = function(){
+	var shutffleHtml = '<button type="button" class="yt-uix-tooltip yt-uix-tooltip-masked  yt-uix-button yt-uix-button-default yt-uix-button-empty" onclick=";return false;" id="light-shuffle-button" data-button-toggle="true" role="button" data-tooltip-text="Turn shuffle on" title="Turn shuffle on"><span class="yt-uix-button-icon-wrapper"><img class="yt-uix-button-icon yt-uix-button-icon-playlist-bar-shuffle" src="//s.ytimg.com/yt/img/pixel-vfl3z5WfW.gif" alt=""><span class="yt-valign-trick"></span></span></button>';	
+	var autoplayHtml = '<button type="button" class="yt-uix-tooltip yt-uix-tooltip-masked  yt-uix-button yt-uix-button-default yt-uix-button-empty" onclick=";return false;" id="light-autoplay-button" data-button-toggle="true" role="button" data-tooltip-text="Turn autoplay on" title="Turn autoplay on"><span class="yt-uix-button-icon-wrapper"><img class="yt-uix-button-icon yt-uix-button-icon-playlist-bar-autoplay" src="//s.ytimg.com/yt/img/pixel-vfl3z5WfW.gif" alt=""><span class="yt-valign-trick"></span></span></button>';
+	
+	$('#watch-actions').append(autoplayHtml).append(shutffleHtml);
+	
+	$('#light-shuffle-button').click(function(){
+		$('#light-autoplay-button').removeClass('yt-uix-button-toggled');
+	});
+	
+	$('#light-autoplay-button').click(function(){
+		$('#light-shuffle-button').removeClass('yt-uix-button-toggled');
+	});
+};
+
+var isLightBtnPressed = function(btnId){
+	var $btn = $('#' + btnId);
+	
+	return $btn.hasClass('yt-uix-button-toggled');
+};
 
 var pollingCheckAndSeek = function(){
-    addIcon();
+    //addIcon();
+	addAdditionalBtn();
     var playerObj = getPlayerObj();
     if(playerObj){
-	intervalTimer = setInterval(function(){
-		if(playerObj.getPlayerState() == 0/*ended*/){
-			clearInterval(intervalTimer);
-			getNextVideoUrl();
-		}	
-	}, 250);
+		intervalTimer = setInterval(function(){
+			if(isLightBtnPressed('light-autoplay-button')){
+				if(playerObj.getPlayerState() == 0){
+				playerObj.seekTo(0, true);
+						// because of Youtube Bug.
+						// registered on Youtube issue tracker
+						playerObj.pauseVideo();
+						playerObj.playVideo();
+						// end of temp code
+				}
+			}else if(isLightBtnPressed('light-shuffle-button')){
+				if(playerObj.getPlayerState() == 0){
+					clearInterval(intervalTimer);
+					getNextVideoUrl();
+				}	
+			}
+		}, 250);
     }
 };
 
