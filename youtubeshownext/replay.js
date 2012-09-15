@@ -46,8 +46,12 @@ var addAdditionalBtn = function(){
 
 	$('#playlist-bar-prev-button').click(function(){
 		if(isExtensionBtnPressed('light-shuffle-button')){
-			$.redirect(PrevVideo.getUrl(), { exShuffle : 1 });
-			minusCurrentPosition();
+			if(getParameterByName('exDebug') == 1){
+				$.redirect(PrevVideo.getUrl(), { exShuffle : 1 , exDebug : 1 });
+			}else{
+				$.redirect(PrevVideo.getUrl(), { exShuffle : 1 });
+				minusCurrentPosition();
+			}
 		}else{
 			$.redirect(PrevVideo.getUrl());
 		}
@@ -104,9 +108,15 @@ var pollingCheckAndSeek = function(){
 					playerObj.playVideo();
 					// end of temp code
 					updateReplayInfo();
+					
 				}else if(isExtensionBtnPressed('light-shuffle-button')){
 					clearInterval(intervalTimer);
-					$.redirect(NextVideo.getUrl(), { exShuffle : 1 });
+					
+					if(getParameterByName('exDebug') == 1){				
+						$.redirect(PrevVideo.getUrl(), { exShuffle : 1 , exDebug : 1 });
+					}else{
+						$.redirect(NextVideo.getUrl(), { exShuffle : 1 });
+					}
 				}
 			}
 		}, 250);
@@ -114,7 +124,7 @@ var pollingCheckAndSeek = function(){
 };
 
 var addDebugMenu = function(){
-    	//debug msg
+    //debug msg
 	var totalIndex = 0;
 
 	$('#watch-actions').after("<div id='debugMenu' style='background-color:#BDBAB2'>== DEBUG MENU==<br/>"
@@ -122,15 +132,18 @@ var addDebugMenu = function(){
 	+ "current title : " + CurrentVideo.getTitle() + "<br/>"
 	+ "total Index : " + totalIndex + "<br/>"
 
-
 	+ "next url : " + NextVideo.getUrl() + "<br/>"
 	+ "next title : " + NextVideo.getTitle() + "<br/>"
 	+ "</div>");
 };
 
 var addDebugMenu2 = function(){
-	$('#debugMenu').append('<br />prev url : ' + PrevVideo.getUrl());
-	$('#debugMenu').append('<br />prev Title : ' + PrevVideo.getTitle());
+	$('#debugMenu').append('<br />prev url : ' + PrevVideo.getUrl()
+	+ '<br />prev Title : ' + PrevVideo.getTitle());
+	
+	if(getParameterByName('exDebug') === null || getParameterByName('exDebug') != 1){
+		$('#debugMenu').hide();
+	}
 };
 
 setTimeout(function(){

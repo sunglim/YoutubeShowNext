@@ -1,6 +1,5 @@
 ﻿// jqeury func
 jQuery.redirect = function(url, params) {
-
 	url = url || window.location.href || '';
 	url =  url.match(/\?/) ? url : url + '?';
 
@@ -43,7 +42,8 @@ var CurrentVideo = (function(){
 
 var NextVideo = (function(){
 	var aryVideoList = document.getElementsByClassName("video-list-item");
-	var randomNo = (Math.random()*3|0) +1;
+	var magicNumber = Math.random();
+	var randomNo = (magicNumber|0) +1;
 	var randomVideoDom = aryVideoList[randomNo];
 	return {
 		getUrl : function(){
