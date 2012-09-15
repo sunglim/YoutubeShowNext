@@ -22,28 +22,37 @@ var getPlayerObj = function(){
         }
         return html5PlayerObj;
     }
-    
+
     return null;
 };
 
 var addAdditionalBtn = function(){
-	var shutffleHtml = '<button type="button" class="yt-uix-tooltip yt-uix-tooltip-masked  yt-uix-button yt-uix-button-default yt-uix-button-empty" onclick=";return false;" id="light-shuffle-button" data-button-toggle="true" role="button" data-tooltip-text="Turn shuffle on" title="Turn shuffle on"><span class="yt-uix-button-icon-wrapper"><img class="yt-uix-button-icon yt-uix-button-icon-playlist-bar-shuffle" src="//s.ytimg.com/yt/img/pixel-vfl3z5WfW.gif" alt=""><span class="yt-valign-trick"></span></span></button>';	
+	var shutffleHtml = '<button type="button" class="yt-uix-tooltip yt-uix-tooltip-masked  yt-uix-button yt-uix-button-default yt-uix-button-empty" onclick=";return false;" id="light-shuffle-button" data-button-toggle="true" role="button" data-tooltip-text="Turn shuffle on" title="Turn shuffle on"><span class="yt-uix-button-icon-wrapper"><img class="yt-uix-button-icon yt-uix-button-icon-playlist-bar-shuffle" src="//s.ytimg.com/yt/img/pixel-vfl3z5WfW.gif" alt=""><span class="yt-valign-trick"></span></span></button>';
 	var autoplayHtml = '<button type="button" class="yt-uix-tooltip yt-uix-tooltip-masked  yt-uix-button yt-uix-button-default yt-uix-button-empty" onclick=";return false;" id="light-autoplay-button" data-button-toggle="true" role="button" data-tooltip-text="Turn autoplay on" title="Turn autoplay on"><span class="yt-uix-button-icon-wrapper"><img class="yt-uix-button-icon yt-uix-button-icon-playlist-bar-autoplay" src="//s.ytimg.com/yt/img/pixel-vfl3z5WfW.gif" alt=""><span class="yt-valign-trick"></span></span></button>';
 	//playlist-bar-prev-button
 	var prevBtnHtml = '<button title="Previous video" type="button" id="playlist-bar-prev-button" class="yt-uix-tooltip yt-uix-tooltip-masked  yt-uix-button yt-uix-button-default yt-uix-tooltip yt-uix-button-empty" role="button" data-tooltip-text="Previous video"><span class="yt-uix-button-icon-wrapper"><img class="yt-uix-button-icon yt-uix-button-icon-playlist-bar-prev" src="//s.ytimg.com/yt/img/pixel-vfl3z5WfW.gif" alt="Previous video"><span class="yt-valign-trick"></span></span></button>';
 	//playlist-bar-next-button
-	var nextBtnHtml = '<button type="button" class="yt-uix-tooltip yt-uix-tooltip-masked  yt-uix-button yt-uix-button-default yt-uix-button-empty" onclick=";return false;" id="playlist-bar-next-button" role="button" data-tooltip-text="Next video&lt;br&gt;"><span class="yt-uix-button-icon-wrapper"><img class="yt-uix-button-icon yt-uix-button-icon-playlist-bar-next" src="//s.ytimg.com/yt/img/pixel-vfl3z5WfW.gif" alt=""><span class="yt-valign-trick"></span></span></button>';
+	var nextBtnHtml = '<button type="button" class="yt-uix-tooltip yt-uix-tooltip-masked  yt-uix-button yt-uix-button-default yt-uix-button-empty" onclick=";return false;" id="playlist-bar-next-button" role="button" data-tooltip-text="Next Random video&lt;br&gt;"><span class="yt-uix-button-icon-wrapper"><img class="yt-uix-button-icon yt-uix-button-icon-playlist-bar-next" src="//s.ytimg.com/yt/img/pixel-vfl3z5WfW.gif" alt=""><span class="yt-valign-trick"></span></span></button>';
 
 	$('#watch-actions').append(prevBtnHtml).append(autoplayHtml).append(shutffleHtml).append(nextBtnHtml);
-	
+
 	$('#light-autoplay-button').click(function(){
 		$('#light-shuffle-button').removeClass('yt-uix-button-toggled');
 	});
-	
+
 	$('#light-shuffle-button').click(function(){
 		$('#light-autoplay-button').removeClass('yt-uix-button-toggled');
 	});
-	
+
+	$('#playlist-bar-prev-button').click(function(){
+		if(isExtensionBtnPressed('light-shuffle-button')){
+			$.redirect(PrevVideo.getUrl(), { exShuffle : 1 });
+			minusCurrentPosition();
+		}else{
+			$.redirect(PrevVideo.getUrl());
+		}
+	});
+
 	$('#playlist-bar-next-button').click(function(){
 		if(isExtensionBtnPressed('light-shuffle-button')){
 			$.redirect(NextVideo.getUrl(), { exShuffle : 1 });
@@ -55,7 +64,7 @@ var addAdditionalBtn = function(){
 
 var isExtensionBtnPressed = function(btnId){
 	var $btn = $('#' + btnId);
-	
+
 	return $btn.hasClass('yt-uix-button-toggled');
 };
 
@@ -81,16 +90,11 @@ var pollingCheckAndSeek = function(){
 	addAdditionalBtn();
 	setInitialButtonStatus();
 	addDebugMenu();	// debug menu
-	
-	
-	// 1. push current video info
-	//function( input_title, input_count, input_url ){
-	pushVideoToShuffleList(CurrentVideo.getTitle(),10,CurrentVideo.getUrl());
-	
-	
+	pushJsToStorage(CurrentVideo.getTitle(),10,CurrentVideo.getUrl());
+	addDebugMenu2();	//debug menu
     var playerObj = getPlayerObj();
     if(playerObj){
-		intervalTimer = setInterval(function(){	
+		intervalTimer = setInterval(function(){
 			if(playerObj.getPlayerState() == 0){
 				if(isExtensionBtnPressed('light-autoplay-button')){
 					playerObj.seekTo(0, true);
@@ -103,7 +107,7 @@ var pollingCheckAndSeek = function(){
 				}else if(isExtensionBtnPressed('light-shuffle-button')){
 					clearInterval(intervalTimer);
 					$.redirect(NextVideo.getUrl(), { exShuffle : 1 });
-				}	
+				}
 			}
 		}, 250);
     }
@@ -111,20 +115,23 @@ var pollingCheckAndSeek = function(){
 
 var addDebugMenu = function(){
     	//debug msg
-	var currentIndex = 0;
 	var totalIndex = 0;
-	
+
 	$('#watch-actions').after("<div id='debugMenu' style='background-color:#BDBAB2'>== DEBUG MENU==<br/>"
 	+ "current url : " + CurrentVideo.getUrl() + "<br/>"
 	+ "current title : " + CurrentVideo.getTitle() + "<br/>"
-	+ "current Index : " + currentIndex + "<br/>"
 	+ "total Index : " + totalIndex + "<br/>"
-	
-	
+
+
 	+ "next url : " + NextVideo.getUrl() + "<br/>"
 	+ "next title : " + NextVideo.getTitle() + "<br/>"
 	+ "</div>");
-}
+};
+
+var addDebugMenu2 = function(){
+	$('#debugMenu').append('<br />prev url : ' + PrevVideo.getUrl());
+	$('#debugMenu').append('<br />prev Title : ' + PrevVideo.getTitle());
+};
 
 setTimeout(function(){
     pollingCheckAndSeek();

@@ -30,23 +30,6 @@ function getParameterByName(name)
 	}
 }
 
-// start with idx 1
-var listShuffleVideo = [];
-var getCurrentShfflePosition;
-
-var pushVideoToShuffleList = function( input_title, input_count, input_url ){
-	if(getCurrentShfflePosition == null || getCurrentShfflePosition === 'undefined'){
-		getCurrentShfflePosition = -1;
-	};
-	$('#debugMenu').append('<br />pushVideoToShuffleList : ' + input_title + ", " + input_count + ", " + input_url);
-	listShuffleVideo.push( { title:input_title, view_count:input_count, url:input_url } );
-	getCurrentShfflePosition++;
-
-	$each(listShuffleVideo,function(){
-		$('#debugMenu').append('<br />listShuffleVideo : ' + this.url);
-	});
-};
-
 var CurrentVideo = (function(){
 	return {
 		getUrl : function(){
@@ -71,3 +54,66 @@ var NextVideo = (function(){
 		}
 	}
 })();
+
+var PrevVideo = (function(){
+	return {
+		getUrl : function(){
+			try{
+			return listShuffleVideo[getCurrentShfflePosition - 1].url;
+			}catch(err){}
+		},
+		getTitle: function(){
+			try{
+			return listShuffleVideo[getCurrentShfflePosition - 1].title;
+			}catch(err){}
+		}
+	}
+})();
+
+var minusCurrentPosition = function(){
+	getCurrentShfflePosition--;
+};
+
+// start with idx 1
+var listShuffleVideo = [];
+var getCurrentShfflePosition;
+
+var pushVideoToShuffleList = function( input_title, input_count, input_url ){
+	if(getCurrentShfflePosition == null || getCurrentShfflePosition === 'undefined'){
+		getCurrentShfflePosition = -1;
+	};
+	
+	listShuffleVideo.push( { title:input_title, view_count:input_count, url:input_url } );
+	getCurrentShfflePosition++;
+};
+
+var pushJsToStorage = function( input_title, input_count, input_url ){
+	$('#debugMenu').append('<br />pushJsToStorage called');
+	
+	// load sessionStorage 
+	// assign to json
+	var sessionRawData = sessionStorage.getItem('XtensionShuffleList');
+	if(sessionRawData == null){
+		
+	}else{
+		listShuffleVideo = JSON.parse(sessionRawData);	
+	}
+	
+	// push to json
+	pushVideoToShuffleList(input_title, input_count, input_url);
+	getCurrentShfflePosition = listShuffleVideo.length -1;//because array start from 0
+	
+	//assign to sessionStorage
+	sessionStorage.setItem('XtensionShuffleList',JSON.stringify(listShuffleVideo));	
+	
+	//debug
+	$('#debugMenu').append('<br />getCurrentShufflePosition : ' + getCurrentShfflePosition);
+	$.each(listShuffleVideo,function(i){
+		$('#debugMenu').append('<br />javscript: listShuffleVideo : [' + i + ']' + this.title);
+	});
+	var dummy = JSON.parse(sessionStorage.getItem('XtensionShuffleList'));
+	
+	$.each(dummy,function(i){
+		$('#debugMenu').append('<br />sessionStorage: listShuffleVideo : [' + i + ']' + this.title);
+	});
+};
