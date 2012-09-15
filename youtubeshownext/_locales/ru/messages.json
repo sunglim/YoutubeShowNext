@@ -1,0 +1,18 @@
+﻿{
+	"appname": {
+		"message": "Light Youtube Auto Replay",
+		"description": "Extension name."
+	},
+	"appdesc": {
+		"message": "light Youtube Auto Replay, Это легко и просто!",
+		"description": "Extension desc."
+	},
+	"TimesAutoReplayed": {
+		"message": " раз(a) повторено",
+		"description": "follow the replay count on frontend page"
+	},
+	"InfoReplayCount" : {
+		"message": "раз(a) повторено",
+		"description": "Replay Count infomation in Info div"
+	}
+}

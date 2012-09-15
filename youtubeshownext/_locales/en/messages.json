@@ -10,5 +10,9 @@
 	"TimesAutoReplayed": {
 		"message": "time(s) auto-replayed",
 		"description": "follow the replay count on frontend page"
+	},
+	"InfoReplayCount": {
+		"message": "Replay Count",
+		"description": "Replay Count infomation in Info div"
 	}
 }
