@@ -42,7 +42,7 @@ var CurrentVideo = (function(){
 
 var NextVideo = (function(){
 	var aryVideoList = document.getElementsByClassName("video-list-item");
-	var magicNumber = Math.random();
+	var magicNumber = Math.random()*5;
 	var randomNo = (magicNumber|0) +1;
 	var randomVideoDom = aryVideoList[randomNo];
 	return {
