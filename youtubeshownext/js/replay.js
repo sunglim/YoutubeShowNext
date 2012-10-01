@@ -37,9 +37,9 @@ var addAdditionalBtn = function(){
 	$('#watch-actions').append(prevBtnHtml).append(autoplayHtml).append(shutffleHtml).append(nextBtnHtml);
 
 	$('#light-autoplay-button').click(function(){
-		$('#light-shuffle-button').removeClass('yt-uix-button-toggled');
-		if($(this).hasClass('yt-uix-button-toggled')){	//to unpressed
-			Preference.setAutoReplayBool(false);
+		$('#light-shuffle-button').removeClass('yt-uix-button-toggled');	//set it unpressed
+		if($(this).hasClass('yt-uix-button-toggled')){	//from previous state
+			Preference.setAutoReplayBool(false);	//to unpressed
 		}else{	//to pressed
 			Preference.setAutoReplayBool(true);
 		};
@@ -47,6 +47,7 @@ var addAdditionalBtn = function(){
 
 	$('#light-shuffle-button').click(function(){
 		$('#light-autoplay-button').removeClass('yt-uix-button-toggled');
+		Preference.setAutoReplayBool(false);
 	});
 
 	$('#playlist-bar-prev-button').click(function(){
@@ -77,6 +78,14 @@ var isExtensionBtnPressed = function(btnId){
 	return $btn.hasClass('yt-uix-button-toggled');
 };
 
+var setInitialButtonStatus = function(){
+	if(getParameterByName('exShuffle') == 1){
+		$('#light-shuffle-button').addClass('yt-uix-button-toggled');
+	}else{
+		$('#light-shuffle-button').removeClass('yt-uix-button-toggled');
+	};
+};
+
 var addInfoDiv = function(){
 	$('#watch-actions').after("<div><b>" + chrome.i18n.getMessage("InfoReplayCount") + " : </b><span id='extensionReplayCntNo'>0</span></div>");
 };
@@ -89,6 +98,7 @@ var updateReplayInfo = function(){
 var pollingCheckAndSeek = function(){
 	addInfoDiv();
 	addAdditionalBtn();
+	setInitialButtonStatus();
 	addDebugMenu();	// debug menu
 	pushJsToStorage(CurrentVideo.getTitle(),10,CurrentVideo.getUrl());
 	addDebugMenu2();	//debug menu
