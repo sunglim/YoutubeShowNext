@@ -29,8 +29,8 @@ var Preference = (function(){
 })();
 
 // innerClass of Prefernce class
-var setAutoBtnPressed= function(isPressed){
-	if(isPressed){
+var setAutoBtnPressed= function(boolPress){
+	if(boolPress){
 		$('#light-autoplay-button').addClass('yt-uix-button-toggled');
 	}else{
 		$('#light-autoplay-button').removeClass('yt-uix-button-toggled');
