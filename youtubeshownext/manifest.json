@@ -19,5 +19,5 @@
 	"description": "Additional Buttons(Prev,Next,Auto-replay,Shuffle) on your Youtube website.",
 	"default_locale": "en",
 	"name": "Youtube Show Next",
-	"version": "0.9.2"
+	"version": "0.9.2.1"
 }
