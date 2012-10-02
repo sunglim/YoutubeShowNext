@@ -38,6 +38,8 @@ var addAdditionalBtn = function(){
 
 	$('#light-autoplay-button').click(function(){
 		$('#light-shuffle-button').removeClass('yt-uix-button-toggled');	//set it unpressed
+		Preference.setShuffleBool(false);
+		
 		if($(this).hasClass('yt-uix-button-toggled')){	//from previous state
 			Preference.setAutoReplayBool(false);	//to unpressed
 		}else{	//to pressed
@@ -48,27 +50,20 @@ var addAdditionalBtn = function(){
 	$('#light-shuffle-button').click(function(){
 		$('#light-autoplay-button').removeClass('yt-uix-button-toggled');
 		Preference.setAutoReplayBool(false);
+		if($(this).hasClass('yt-uix-button-toggled')){	//from previous state
+			Preference.setShuffleBool(false);
+		}else{
+			Preference.setShuffleBool(true);
+		};
 	});
 
 	$('#playlist-bar-prev-button').click(function(){
-		if(isExtensionBtnPressed('light-shuffle-button')){
-			if(getParameterByName('exDebug') == 1){
-				$.redirect(PrevVideo.getUrl(), { exShuffle : 1 , exDebug : 1 });
-			}else{
-				$.redirect(PrevVideo.getUrl(), { exShuffle : 1 });
-				minusCurrentPosition();
-			}
-		}else{
-			$.redirect(PrevVideo.getUrl());
-		}
+		$.redirect(PrevVideo.getUrl());
+		minusCurrentPosition();
 	});
 
 	$('#playlist-bar-next-button').click(function(){
-		if(isExtensionBtnPressed('light-shuffle-button')){
-			$.redirect(NextVideo.getUrl(), { exShuffle : 1 });
-		}else{
-			$.redirect(NextVideo.getUrl());
-		}
+		$.redirect(NextVideo.getUrl());
 	});
 };
 
@@ -76,14 +71,6 @@ var isExtensionBtnPressed = function(btnId){
 	var $btn = $('#' + btnId);
 
 	return $btn.hasClass('yt-uix-button-toggled');
-};
-
-var setInitialButtonStatus = function(){
-	if(getParameterByName('exShuffle') == 1){
-		$('#light-shuffle-button').addClass('yt-uix-button-toggled');
-	}else{
-		$('#light-shuffle-button').removeClass('yt-uix-button-toggled');
-	};
 };
 
 var addInfoDiv = function(){
@@ -98,14 +85,15 @@ var updateReplayInfo = function(){
 var pollingCheckAndSeek = function(){
 	addInfoDiv();
 	addAdditionalBtn();
-	setInitialButtonStatus();
 	addDebugMenu();	// debug menu
 	pushJsToStorage(CurrentVideo.getTitle(),10,CurrentVideo.getUrl());
 	addDebugMenu2();	//debug menu
-	Preference.loadPreference('isAutoReplay');
+	
+	Preference.load('isAutoReplay');
+    Preference.load('isShuffle');
     
 	var playerObj = getPlayerObj();
-    if(playerObj){
+    if(playerObj){ 
 		intervalTimer = setInterval(function(){
 			if(playerObj.getPlayerState() == 0){
 				if(isExtensionBtnPressed('light-autoplay-button')){
@@ -118,13 +106,8 @@ var pollingCheckAndSeek = function(){
 					updateReplayInfo();
 					
 				}else if(isExtensionBtnPressed('light-shuffle-button')){
-					clearInterval(intervalTimer);
-					
-					if(getParameterByName('exDebug') == 1){				
-						$.redirect(PrevVideo.getUrl(), { exShuffle : 1 , exDebug : 1 });
-					}else{
-						$.redirect(NextVideo.getUrl(), { exShuffle : 1 });
-					}
+					clearInterval(intervalTimer);					
+					$.redirect(NextVideo.getUrl());
 				}
 			}
 		}, 250);
