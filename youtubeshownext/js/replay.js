@@ -34,7 +34,7 @@ var addAdditionalBtn = function(){
 	//playlist-bar-next-button
 	var nextBtnHtml = '<button type="button" class="yt-uix-tooltip yt-uix-tooltip-masked  yt-uix-button yt-uix-button-default yt-uix-button-empty" onclick=";return false;" id="playlist-bar-next-button" role="button" data-tooltip-text="Next Random video&lt;br&gt;"><span class="yt-uix-button-icon-wrapper"><img class="yt-uix-button-icon yt-uix-button-icon-playlist-bar-next" src="//s.ytimg.com/yt/img/pixel-vfl3z5WfW.gif" alt=""><span class="yt-valign-trick"></span></span></button>';
 
-	$('#watch-actions').append(prevBtnHtml).append(autoplayHtml).append(shutffleHtml).append(nextBtnHtml);
+	$('#watch7-video-container').append(containerDiv);
 
 	$('#light-autoplay-button').click(function(){
 		$('#light-shuffle-button').removeClass('yt-uix-button-toggled');	//set it unpressed
